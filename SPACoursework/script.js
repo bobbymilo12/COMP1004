@@ -1,14 +1,17 @@
 function showContent(contentId) {
+    console.log('showContent called with contentId:', contentId);
     document.getElementById('overlay').style.display = 'block';
     document.getElementById(contentId).style.display = 'block';
 }
 
 function hideContent() {
+    console.log('hideContent called');
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('content').style.display = 'none';
 }
 
 function addFlashcardField() {
+    console.log('addFlashcardField called');
     const flashcardFields = document.getElementById('flashcardFields');
     const newField = document.createElement('div');
     newField.classList.add('flashcardField');
@@ -23,6 +26,7 @@ function addFlashcardField() {
 
 document.getElementById('flashcardForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    console.log('flashcardForm submit event');
 
     const questions = document.querySelectorAll('.question');
     const answers = document.querySelectorAll('.answer');
@@ -34,6 +38,8 @@ document.getElementById('flashcardForm').addEventListener('submit', function(eve
             answer: answers[i].value
         });
     }
+
+    console.log('Submitting flashcards:', flashcards);
 
     fetch('/saveFlashcard', {
         method: 'POST',
@@ -54,14 +60,17 @@ document.getElementById('flashcardForm').addEventListener('submit', function(eve
 });
 
 function loadFlashcards() {
+    console.log('loadFlashcards called');
     fetch('/flashcards')
         .then(response => {
+            console.log('Response from /flashcards:', response);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
         .then(flashcards => {
+            console.log('Flashcards loaded:', flashcards); // Debugging log
             const container = document.getElementById('flashcardContainer');
             container.innerHTML = ''; // Clear existing flashcards
             flashcards.forEach((flashcard, index) => {
@@ -80,14 +89,14 @@ function loadFlashcards() {
 }
 
 function showFlashcards() {
+    console.log('showFlashcards called');
     const container = document.getElementById('flashcardContainer');
     container.style.display = 'block';
     loadFlashcards();
-    document.addEventListener('click', handleOutsideClick);
-    document.addEventListener('keydown', handleEscKey);
 }
 
 function hideFlashcards() {
+    console.log('hideFlashcards called');
     const container = document.getElementById('flashcardContainer');
     container.style.display = 'none';
     document.removeEventListener('click', handleOutsideClick);
@@ -108,6 +117,7 @@ function handleEscKey(event) {
 }
 
 function flipCard(card) {
+    console.log('flipCard called');
     card.classList.toggle('flipped');
 }
 
