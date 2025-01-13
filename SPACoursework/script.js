@@ -83,6 +83,28 @@ function showFlashcards() {
     const container = document.getElementById('flashcardContainer');
     container.style.display = 'block';
     loadFlashcards();
+    document.addEventListener('click', handleOutsideClick);
+    document.addEventListener('keydown', handleEscKey);
+}
+
+function hideFlashcards() {
+    const container = document.getElementById('flashcardContainer');
+    container.style.display = 'none';
+    document.removeEventListener('click', handleOutsideClick);
+    document.removeEventListener('keydown', handleEscKey);
+}
+
+function handleOutsideClick(event) {
+    const container = document.getElementById('flashcardContainer');
+    if (!container.contains(event.target)) {
+        hideFlashcards();
+    }
+}
+
+function handleEscKey(event) {
+    if (event.key === 'Escape') {
+        hideFlashcards();
+    }
 }
 
 function flipCard(card) {
