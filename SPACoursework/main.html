@@ -15,16 +15,24 @@
             <img src="addFlash.png" onclick="showContent('content')">
         </div>
         <div class="Rdiv">
-            <img src="addFlash.png" onclick="showContent('content')">
+            <img src="addFlash.png" onclick="showFlashcards()">
+            <div id="flashcardContainer" style="display: none;">
+                <!-- Flashcards will be dynamically inserted here -->
+            </div>
         </div>
     </div>
     <div id="overlay" class="overlay">
         <div id="content" class="content">
             <form id="flashcardForm">
-                <label for="question">Question:</label>
-                <input type="text" id="question" name="question" required><br><br>
-                <label for="answer">Answer:</label>
-                <input type="text" id="answer" name="answer" required><br><br>
+                <div id="flashcardFields">
+                    <div class="flashcardField">
+                        <label for="question">Question:</label>
+                        <input type="text" class="question" name="question" required><br><br>
+                        <label for="answer">Answer:</label>
+                        <input type="text" class="answer" name="answer" required><br><br>
+                    </div>
+                </div>
+                <button type="button" onclick="addFlashcardField()">Add Another Question</button><br><br>
                 <button type="submit">Save</button>
                 <button type="button" onclick="hideContent()">Cancel</button>
             </form>

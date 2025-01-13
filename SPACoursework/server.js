@@ -12,22 +12,34 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'main.html'));
 });
 
-app.post('/saveFlashcard', (req, res) => {
-    const flashcard = req.body;
-    
+// Endpoint to fetch flashcards
+app.get('/flashcards', (req, res) => {
     fs.readFile('flashcards.json', (err, data) => {
         if (err && err.code !== 'ENOENT') {
             return res.status(500).json({ error: 'Failed to read file' });
         }
         
         const flashcards = data ? JSON.parse(data) : [];
-        flashcards.push(flashcard);
+        res.json(flashcards);
+    });
+});
+
+app.post('/saveFlashcard', (req, res) => {
+    const flashcards = req.body;
+    
+    fs.readFile('flashcards.json', (err, data) => {
+        if (err && err.code !== 'ENOENT') {
+            return res.status(500).json({ error: 'Failed to read file' });
+        }
         
-        fs.writeFile('flashcards.json', JSON.stringify(flashcards, null, 2), (err) => {
+        const existingFlashcards = data ? JSON.parse(data) : [];
+        existingFlashcards.push(...flashcards);
+        
+        fs.writeFile('flashcards.json', JSON.stringify(existingFlashcards, null, 2), (err) => {
             if (err) {
                 return res.status(500).json({ error: 'Failed to write file' });
             }
-            res.json({ message: 'Flashcard saved successfully' });
+            res.json({ message: 'Flashcards saved successfully' });
         });
     });
 });

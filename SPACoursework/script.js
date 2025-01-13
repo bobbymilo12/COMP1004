@@ -8,30 +8,86 @@ function hideContent() {
     document.getElementById('content').style.display = 'none';
 }
 
+function addFlashcardField() {
+    const flashcardFields = document.getElementById('flashcardFields');
+    const newField = document.createElement('div');
+    newField.classList.add('flashcardField');
+    newField.innerHTML = `
+        <label for="question">Question:</label>
+        <input type="text" class="question" name="question" required><br><br>
+        <label for="answer">Answer:</label>
+        <input type="text" class="answer" name="answer" required><br><br>
+    `;
+    flashcardFields.appendChild(newField);
+}
+
 document.getElementById('flashcardForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const question = document.getElementById('question').value;
-    const answer = document.getElementById('answer').value;
+    const questions = document.querySelectorAll('.question');
+    const answers = document.querySelectorAll('.answer');
+    const flashcards = [];
 
-    const flashcard = {
-        question: question,
-        answer: answer
-    };
+    for (let i = 0; i < questions.length; i++) {
+        flashcards.push({
+            question: questions[i].value,
+            answer: answers[i].value
+        });
+    }
 
     fetch('/saveFlashcard', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(flashcard)
+        body: JSON.stringify(flashcards)
     })
     .then(response => response.json())
     .then(data => {
         console.log('Success:', data);
         hideContent();
+        loadFlashcards(); // Reload flashcards after saving
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 });
+
+function loadFlashcards() {
+    fetch('/flashcards')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(flashcards => {
+            const container = document.getElementById('flashcardContainer');
+            container.innerHTML = ''; // Clear existing flashcards
+            flashcards.forEach((flashcard, index) => {
+                const card = document.createElement('div');
+                card.classList.add('flashcard');
+                card.innerHTML = `
+                    <div class="flashcard-inner" onclick="flipCard(this)">
+                        <div class="flashcard-front">${flashcard.question}</div>
+                        <div class="flashcard-back">${flashcard.answer}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        })
+        .catch(error => console.error('Error loading flashcards:', error));
+}
+
+function showFlashcards() {
+    const container = document.getElementById('flashcardContainer');
+    container.style.display = 'block';
+    loadFlashcards();
+}
+
+function flipCard(card) {
+    card.classList.toggle('flipped');
+}
+
+// Load flashcards on page load
+document.addEventListener('DOMContentLoaded', loadFlashcards);
