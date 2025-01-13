@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style1.css" />
+    <title>Flash.io</title> 
+</head>
+<body>
+    <div>
+        <h1>Flash.io</h1><h2>Create your own Flash Cards!</h2>
+    </div>
+    <div class="cards">
+        <div class="Ldiv">
+            <img src="addFlash.png" onclick="showContent('leftContent')">
+        </div>
+        <div class="Rdiv">
+            <img src="addFlash.png" onclick="showContent('rightContent')">
+        </div>
+    </div>
+    <div id="overlay" class="overlay">
+        <div id="content" class="content">
+            <form id="flashcardForm">
+                <label for="question">Question:</label>
+                <input type="text" id="question" name="question" required><br><br>
+                <label for="answer">Answer:</label>
+                <input type="text" id="answer" name="answer" required><br><br>
+                <button type="submit">Save</button>
+                <button type="button" onclick="hideContent()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
