@@ -111,6 +111,7 @@ function handleOutsideClick(event) {
 }
 
 function handleEscKey(event) {
+    const container = document.getElementById('flashcardContainer');
     if (event.key === 'Escape') {
         hideFlashcards();
     }
