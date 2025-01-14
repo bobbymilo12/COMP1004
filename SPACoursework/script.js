@@ -1,126 +1,143 @@
-function showContent(contentId) {
-    console.log('showContent called with contentId:', contentId);
-    document.getElementById('overlay').style.display = 'block';
-    document.getElementById(contentId).style.display = 'block';
-}
+$(document).ready(function() {
+    // Load the home content by default
+    loadHomeContent();
 
-function hideContent() {
-    console.log('hideContent called');
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('content').style.display = 'none';
-}
+    // Handle navigation clicks
+    $('#homeLink').click(function(event) {
+        event.preventDefault();
+        loadHomeContent();
+    });
 
-function addFlashcardField() {
-    console.log('addFlashcardField called');
-    const flashcardFields = document.getElementById('flashcardFields');
-    const newField = document.createElement('div');
-    newField.classList.add('flashcardField');
-    newField.innerHTML = `
-        <label for="question">Question:</label>
-        <input type="text" class="question" name="question" required><br><br>
-        <label for="answer">Answer:</label>
-        <input type="text" class="answer" name="answer" required><br><br>
-    `;
-    flashcardFields.appendChild(newField);
-}
+    $('#createLink').click(function(event) {
+        event.preventDefault();
+        loadCreateContent();
+    });
 
-document.getElementById('flashcardForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    console.log('flashcardForm submit event');
+    $('#viewLink').click(function(event) {
+        event.preventDefault();
+        loadViewContent();
+    });
 
-    const questions = document.querySelectorAll('.question');
-    const answers = document.querySelectorAll('.answer');
-    const flashcards = [];
+    function loadHomeContent() {
+        $('#content').html(`
+            <div class="text-center my-4">
+                <h2>Welcome to Flash.io</h2>
+                <p>Create and manage your own flashcards!</p>
+            </div>
+        `);
+    }
 
-    for (let i = 0; i < questions.length; i++) {
-        flashcards.push({
-            question: questions[i].value,
-            answer: answers[i].value
+    function loadCreateContent() {
+        $('#content').html(`
+            <div class="text-center my-4">
+                <h2>Create Flashcards</h2>
+                <form id="flashcardForm">
+                    <div id="flashcardFields">
+                        <div class="flashcardField">
+                            <label for="question">Question:</label>
+                            <input type="text" class="form-control question" name="question" required><br>
+                            <label for="answer">Answer:</label>
+                            <input type="text" class="form-control answer" name="answer" required><br>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="addFlashcardFieldBtn">Add Another Question</button><br><br>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                </form>
+            </div>
+        `);
+
+        // Add event listeners for the form
+        $('#addFlashcardFieldBtn').click(function() {
+            $('#flashcardFields').append(`
+                <div class="flashcardField">
+                    <label for="question">Question:</label>
+                    <input type="text" class="form-control question" name="question" required><br>
+                    <label for="answer">Answer:</label>
+                    <input type="text" class="form-control answer" name="answer" required><br>
+                </div>
+            `);
+        });
+
+        $('#flashcardForm').submit(function(event) {
+            event.preventDefault();
+            const flashcards = [];
+            $('.flashcardField').each(function() {
+                const question = $(this).find('.question').val();
+                const answer = $(this).find('.answer').val();
+                flashcards.push({ question, answer });
+            });
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+            alert('Flashcards saved!');
+        });
+
+        $('#cancelBtn').click(function() {
+            $('#flashcardForm')[0].reset();
         });
     }
 
-    console.log('Submitting flashcards:', flashcards);
+    function loadViewContent() {
+        $('#content').html(`
+            <div class="text-center my-4">
+                <h2>View Flashcards</h2>
+                <div id="flashcardContainer" class="overlay">
+                    <!-- Flashcards will be dynamically inserted here -->
+                </div>
+                <button class="btn btn-secondary" id="loadFlashcardsBtn">Load Flashcards</button>
+                <button class="btn btn-secondary" id="saveFlashcardsBtn">Save Flashcards</button>
+                <input type="file" id="loadFlashcardsInput" style="display: none;">
+            </div>
+        `);
 
-    fetch('/saveFlashcard', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(flashcards)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        hideContent();
-        loadFlashcards(); // Reload flashcards after saving
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-});
+        // Add event listeners for loading and saving flashcards
+        $('#loadFlashcardsBtn').click(function() {
+            const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+            displayFlashcards(flashcards);
+        });
 
-function loadFlashcards() {
-    console.log('loadFlashcards called');
-    fetch('/flashcards')
-        .then(response => {
-            console.log('Response from /flashcards:', response);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        $('#saveFlashcardsBtn').click(function() {
+            const flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+            const blob = new Blob([JSON.stringify(flashcards, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'flashcards.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        $('#loadFlashcardsInput').change(function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const flashcards = JSON.parse(e.target.result);
+                    localStorage.setItem('flashcards', JSON.stringify(flashcards));
+                    displayFlashcards(flashcards);
+                };
+                reader.readAsText(file);
             }
-            return response.json();
-        })
-        .then(flashcards => {
-            console.log('Flashcards loaded:', flashcards); // Debugging log
-            const container = document.getElementById('flashcardContainer');
-            container.innerHTML = ''; // Clear existing flashcards
+        });
+
+        function displayFlashcards(flashcards) {
+            const container = $('#flashcardContainer');
+            container.empty();
             flashcards.forEach((flashcard, index) => {
-                const card = document.createElement('div');
-                card.classList.add('flashcard');
-                card.innerHTML = `
-                    <div class="flashcard-inner" onclick="flipCard(this)">
-                        <div class="flashcard-front">${flashcard.question}</div>
-                        <div class="flashcard-back">${flashcard.answer}</div>
+                const card = $(`
+                    <div class="flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">${flashcard.question}</div>
+                            <div class="flashcard-back">${flashcard.answer}</div>
+                        </div>
                     </div>
-                `;
-                container.appendChild(card);
+                `);
+                card.find('.flashcard-inner').click(function() {
+                    $(this).toggleClass('flipped');
+                });
+                container.append(card);
             });
-        })
-        .catch(error => console.error('Error loading flashcards:', error));
-}
-
-function showFlashcards() {
-    console.log('showFlashcards called');
-    const container = document.getElementById('flashcardContainer');
-    container.style.display = 'block';
-    loadFlashcards();
-}
-
-function hideFlashcards() {
-    console.log('hideFlashcards called');
-    const container = document.getElementById('flashcardContainer');
-    container.style.display = 'none';
-    document.removeEventListener('click', handleOutsideClick);
-    document.removeEventListener('keydown', handleEscKey);
-}
-
-function handleOutsideClick(event) {
-    const container = document.getElementById('flashcardContainer');
-    if (!container.contains(event.target)) {
-        hideFlashcards();
+        }
     }
-}
-
-function handleEscKey(event) {
-    const container = document.getElementById('flashcardContainer');
-    if (event.key === 'Escape') {
-        hideFlashcards();
-    }
-}
-
-function flipCard(card) {
-    console.log('flipCard called');
-    card.classList.toggle('flipped');
-}
-
-// Load flashcards on page load
-document.addEventListener('DOMContentLoaded', loadFlashcards);
+});
