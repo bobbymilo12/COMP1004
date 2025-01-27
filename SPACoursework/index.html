@@ -1,42 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style1.css"> <!-- Link to your custom CSS file -->
-    <title>Flash.io</title> 
+    <link rel="stylesheet" href="style1.css">
+    <title>Personal Budget Tracker</title>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block sidebar">
-                <div class="sidebar-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" id="homeLink">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="createLink">Create Flashcards</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="viewLink">View Flashcards</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 offset-md-2">
-                <div class="text-center my-4">
-                    <h1>Flash.io</h1>
-                    <h2>Create your own Flash Cards!</h2>
-                </div>
-                <div id="content">
-                    <!-- Content will be dynamically inserted here -->
-                </div>
-            </main>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="script.js"></script>
+    <header>
+        <h1>Personal Budget Tracker</h1>
+    </header>
+    <main>
+        <!-- Income Form -->
+        <section>
+            <h2>Set Monthly Income</h2>
+            <div class="form-group">
+                <label for="income">Monthly Income ($)</label>
+                <input type="number" id="income" placeholder="Enter your monthly income">
+            </div>
+            <button id="setIncome">Set Income</button>
+        </section>
+
+        <!-- Expense Form -->
+        <section>
+            <h2>Add Expense</h2>
+            <div class="form-group">
+                <label for="expense-title">Expense Title</label>
+                <input type="text" id="expense-title" placeholder="Enter expense title">
+            </div>
+            <div class="form-group">
+                <label for="expense-amount">Expense Amount ($)</label>
+                <input type="number" id="expense-amount" placeholder="Enter expense amount">
+            </div>
+            <div class="form-group">
+                <label for="expense-category">Category</label>
+                <select id="expense-category">
+                    <option value="Food">Food</option>
+                    <option value="Rent">Rent</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button id="addExpense">Add Expense</button>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="summary">
+            <h2>Summary</h2>
+            <p><strong>Monthly Income:</strong> $<span id="display-income">0.00</span></p>
+            <p><strong>Total Expenses:</strong> $<span id="display-expenses">0.00</span></p>
+            <p><strong>Remaining Budget:</strong> $<span id="display-remaining">0.00</span></p>
+        </section>
+    </main>
 </body>
 </html>
