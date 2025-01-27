@@ -1,38 +1,37 @@
-        let income = 0;
-        let expenses = [];
+$(document).ready(function () {
+    // Navigation logic
+    $("#home").click(function () {
+        $("#content").html(`
+          <div id="welcome-section">
+            <h1>Welcome</h1>
+            <p>
+              Welcome to the COMP1004 sample Single Page Application. In this example,
+              we shall load a map, a treasure game, and a data chart into this space
+              to illustrate how jQuery will allow you to provide a rich user
+              experience on one HTML page.
+            </p>
+          </div>
+        `);
+    });
 
-        const setIncomeButton = document.getElementById('setIncome');
-        const addExpenseButton = document.getElementById('addExpense');
-        const incomeDisplay = document.getElementById('display-income');
-        const expensesDisplay = document.getElementById('display-expenses');
-        const remainingDisplay = document.getElementById('display-remaining');
+    $("#input").click(function () {
+        $("#content").html(`
+          <h1>Add your Salary and Expenses here</h1>
+          <p>This section will load the map content.</p>
+        `);
+    });
 
-        setIncomeButton.addEventListener('click', () => {
-            const incomeInput = document.getElementById('income');
-            income = parseFloat(incomeInput.value) || 0;
-            updateSummary();
-            incomeInput.value = '';
-        });
+    $("#track").click(function () {
+        $("#content").html(`
+          <h1>Track Spending's</h1>
+          <p>This section will load the treasure game content.</p>
+        `);
+    });
 
-        addExpenseButton.addEventListener('click', () => {
-            const title = document.getElementById('expense-title').value;
-            const amount = parseFloat(document.getElementById('expense-amount').value) || 0;
-            const category = document.getElementById('expense-category').value;
-
-            if (title && amount > 0) {
-                expenses.push({ title, amount, category });
-                updateSummary();
-            }
-
-            document.getElementById('expense-title').value = '';
-            document.getElementById('expense-amount').value = '';
-        });
-
-        function updateSummary() {
-            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const remainingBudget = income - totalExpenses;
-
-            incomeDisplay.textContent = income.toFixed(2);
-            expensesDisplay.textContent = totalExpenses.toFixed(2);
-            remainingDisplay.textContent = remainingBudget.toFixed(2);
-        }
+    $("#data").click(function () {
+        $("#content").html(`
+          <h1>Data</h1>
+          <p>This section will load the data chart content.</p>
+        `);
+    });
+});
