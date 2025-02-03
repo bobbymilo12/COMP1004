@@ -1,16 +1,32 @@
 $(document).ready(function () {
+  function saveToLocalStorage(data) {
+    localStorage.setItem('budgetData', JSON.stringify(data));
+  }
+
+  function loadFromLocalStorage() {
+    const data = localStorage.getItem('budgetData');
+    return data ? JSON.parse(data) : [];
+  }
+
+  function downloadJSON(data) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "budget.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+
   $("#home").click(function () {
-      $("#content").html(`
-        <div id="welcome-section">
-          <h1>Welcome</h1>
-          <p>
-            Welcome to the COMP1004 sample Single Page Application. In this example,
-            we shall load a map, a treasure game, and a data chart into this space
-            to illustrate how jQuery will allow you to provide a rich user
-            experience on one HTML page.
-          </p>
-        </div>
-      `);
+    $("#content").html(`
+      <div id="welcome-section">
+        <h1>Welcome</h1>
+        <p>
+          Welcome to the COMP1004 sample Single Page Application. 
+        </p>
+      </div>
+    `);
   });
 
   $("#input").click(function () {
@@ -39,40 +55,89 @@ $(document).ready(function () {
               <option value="other">Other</option>
             </select>
           </div>
+          <div class="mb-3">
+            <label for="date" class="form-label">Date:</label>
+            <input type="date" class="form-control" id="date" name="date">
+          </div>
           <button type="submit" class="btn btn-primary">Submit Expenses</button>
         </form>
       </div>
     `);
 
+    let data = loadFromLocalStorage();
+
     $("#salary-form").submit(function (event) {
       event.preventDefault();
-      const salary = $("#salary").val();
-      const data = { salary: salary };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      saveAs(blob, "budget.json");
-    });
+      const salary = parseFloat($("#salary").val());
+      let data = loadFromLocalStorage();
+      data = data.filter(item => item.type !== "salary");
+      data.push({ type: "salary", amount: salary });
+      saveToLocalStorage(data);
+  });
 
     $("#expenses-form").submit(function (event) {
       event.preventDefault();
       const expenses = $("#expenses").val();
       const category = $("#category").val();
-      const data = { expenses: expenses, category: category };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      saveAs(blob, "budget.json");
+      const date = $("#date").val();
+      data.push({ type: "expenses", amount: parseFloat(expenses), category: category, date: date });
+      saveToLocalStorage(data);
     });
   });
 
   $("#track").click(function () {
-      $("#content").html(`
-        <h1>Track Spending's</h1>
-        <p>This section will track spendings.</p>
-      `);
+    let data = loadFromLocalStorage();
+    let salary = data.find(item => item.type === "salary");
+    let expenses = data.filter(item => item.type === "expenses");
+
+    let content = `
+      <h1>Track Spending's</h1>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Salary</h5>
+          <p class="card-text">£${salary ? salary.amount : 0}</p>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cost</th>
+            <th>Category</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    expenses.forEach(item => {
+      let date = new Date(item.date);
+      let formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+      content += `
+        <tr>
+          <td>£${item.amount}</td>
+          <td>${item.category}</td>
+          <td>${formattedDate}</td>
+        </tr>
+      `;
+    });
+
+    content += `
+        </tbody>
+      </table>
+      <button id="download-data" class="btn btn-primary">Download Data</button>
+    `;
+
+    $("#content").html(content);
+
+    $("#download-data").click(function () {
+      downloadJSON(data);
+    });
   });
 
   $("#data").click(function () {
-      $("#content").html(`
-        <h1>Data</h1>
-        <p>This section will display data.</p>
-      `);
+    $("#content").html(`
+      <h1>Data</h1>
+      <p>This section will display data.</p>
+    `);
   });
-}); 
+});

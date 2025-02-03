@@ -1,0 +1,40 @@
+[
+  {
+    "type": "salary",
+    "amount": "100000"
+  },
+  {
+    "type": "expenses",
+    "amount": "21",
+    "category": "transportation",
+    "date": "2004-04-02"
+  },
+  {
+    "type": "salary",
+    "amount": "150000"
+  },
+  {
+    "type": "expenses",
+    "amount": "12000",
+    "category": "utilities",
+    "date": "2004-04-02"
+  },
+  {
+    "type": "expenses",
+    "amount": "12000",
+    "category": "utilities",
+    "date": "2004-04-02"
+  },
+  {
+    "type": "expenses",
+    "amount": "12000",
+    "category": "utilities",
+    "date": "2004-04-02"
+  },
+  {
+    "type": "expenses",
+    "amount": "12000",
+    "category": "utilities",
+    "date": "2004-04-02"
+  }
+]

@@ -1,1 +1,30 @@
-[]
+[
+    {
+      "type": "salary",
+      "amount": 5000
+    },
+    {
+      "type": "expenses",
+      "amount": 200,
+      "category": "food",
+      "date": "2025-10-01"
+    },
+    {
+      "type": "expenses",
+      "amount": 150,
+      "category": "transportation",
+      "date": "2025-10-02"
+    },
+    {
+      "type": "expenses",
+      "amount": 100,
+      "category": "entertainment",
+      "date": "2025-10-03"
+    },
+    {
+      "type": "expenses",
+      "amount": "21",
+      "category": "transportation",
+      "date": "2004-04-02"
+    }
+  ]
