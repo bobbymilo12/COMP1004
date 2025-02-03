@@ -82,10 +82,13 @@ $(document).ready(function () {
 
     $("#salary-form").submit(function (event) {
       event.preventDefault();
-      const salary = $("#salary").val();
-      data.push({ type: "salary", amount: parseFloat(salary) });
+      const salary = parseFloat($("#salary").val());
+      let data = loadFromLocalStorage(); 
+      data = data.filter(item => item.type !== "salary");
+      data.push({ type: "salary", amount: salary });
       saveToLocalStorage(data);
-    });
+  });
+  
 
     $("#expenses-form").submit(function (event) {
       event.preventDefault();
