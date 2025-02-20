@@ -26,6 +26,7 @@ $(document).ready(function () {
     });
   }
 
+  
   $("#home").click(function () {
     $("#content").html(`
       <div id="welcome-section">
