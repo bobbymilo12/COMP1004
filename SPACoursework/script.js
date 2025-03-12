@@ -26,7 +26,7 @@ $(document).ready(function () {
     });
   }
 
-  
+
   $("#home").click(function () {
     $("#content").html(`
       <div id="welcome-section">
@@ -84,12 +84,12 @@ $(document).ready(function () {
     $("#salary-form").submit(function (event) {
       event.preventDefault();
       const salary = parseFloat($("#salary").val());
-      let data = loadFromLocalStorage(); 
+      let data = loadFromLocalStorage();
       data = data.filter(item => item.type !== "salary");
       data.push({ type: "salary", amount: salary });
       saveToLocalStorage(data);
-  });
-  
+    });
+
 
     $("#expenses-form").submit(function (event) {
       event.preventDefault();
@@ -106,55 +106,65 @@ $(document).ready(function () {
     let salary = data.find(item => item.type === "salary");
     let expenses = data.filter(item => item.type === "expenses");
 
+
     function renderTable(data) {
+      let totalExpenses = data.reduce((sum, item) => item.type === 'expenses' ? sum + item.amount : sum, 0);
+      let remainingBudget = salary ? salary.amount - totalExpenses : 0;
+
       let content = `
-        <h1>Track Spending's</h1>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="card mb-4">
-              <div class="card-body">
-                <h5 class="card-title">Salary</h5>
-                <p class="card-text">£${salary ? salary.amount : 0}</p>
-              </div>
-            </div>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th id="sort-cost">Cost</th>
-                  <th id="sort-category">Category</th>
-                  <th id="sort-date">Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-      `;
+    <h1>Track Spending's</h1>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Salary</h5>
+            <p class="card-text">£${salary ? salary.amount : 0}</p>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th id="sort-cost">Cost</th>
+              <th id="sort-category">Category</th>
+              <th id="sort-date">Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+  `;
 
       data.forEach((item, index) => {
         let date = new Date(item.date);
         let formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
         content += `
-          <tr data-index="${index}">
-            <td>£${item.amount}</td>
-            <td>${item.category}</td>
-            <td>${formattedDate}</td>
-            <td>
-              <button class="btn btn-warning btn-edit">Edit</button>
-              <button class="btn btn-danger btn-delete">Delete</button>
-            </td>
-          </tr>
-        `;
+      <tr data-index="${index}">
+        <td>£${item.amount}</td>
+        <td>${item.category}</td>
+        <td>${formattedDate}</td>
+        <td>
+          <button class="btn btn-warning btn-edit">Edit</button>
+          <button class="btn btn-danger btn-delete">Delete</button>
+        </td>
+      </tr>
+    `;
       });
 
       content += `
-              </tbody>
-            </table>
-            <button id="download-data" class="btn btn-primary">Download Data</button>
-          </div>
-          <div class="col-md-6">
-            <canvas id="expensesChart"></canvas>
+          </tbody>
+        </table>
+                <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Remaining Budget</h5>
+            <p class="card-text">£${remainingBudget}</p>
           </div>
         </div>
-      `;
+        <button id="download-data" class="btn btn-primary">Download Data</button>
+      </div>
+      <div class="col-md-6">
+        <canvas id="expensesChart"></canvas>
+      </div>
+    </div>
+  `;
 
       $("#content").html(content);
 
@@ -201,6 +211,7 @@ $(document).ready(function () {
 
       renderChart(expenses);
     }
+
 
     function renderChart(expenses) {
       const ctx = document.getElementById('expensesChart').getContext('2d');
