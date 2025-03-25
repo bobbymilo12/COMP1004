@@ -30,7 +30,7 @@ $(document).ready(function () {
 
   $("#home").click(function () {
     $("#content").html(`
-      <div id="welcome-section">
+      <div id="welcome">
         <h1>Welcome</h1>
         <p>
           Welcome to the COMP1004 sample Single Page Application. 
@@ -213,9 +213,7 @@ $(document).ready(function () {
           renderTable(data);
         }
       });
-
       
-
       $("#sort-cost").click(function () {
         expenses = sortData(expenses, 'amount', false);
         renderTable(expenses);
