@@ -1,4 +1,5 @@
 $(document).ready(function () {
+  let data = loadFromLocalStorage();
   function saveToLocalStorage(data) {
     localStorage.setItem('budgetData', JSON.stringify(data));
   }
@@ -9,7 +10,7 @@ $(document).ready(function () {
   }
 
   function downloadJSON(data) {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "budget.json");
@@ -41,7 +42,7 @@ $(document).ready(function () {
   $("#input").click(function () {
     $("#content").html(`
       <div class="container mt-5">
-        <h1 class="mb-4">Add your Salary and Expenses here</h1>
+        <h1 class="mb-4">Add your Salary and Expenses here:</h1>
         <div class="row">
           <div class="col-md-6">
             <form id="salary-form" class="mb-4">
@@ -65,6 +66,7 @@ $(document).ready(function () {
                   <option value="Transportation">Transportation</option>
                   <option value="Entertainment">Entertainment</option>
                   <option value="Utilities">Utilities</option>
+                  <option value="Rent">Rent</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
@@ -84,20 +86,43 @@ $(document).ready(function () {
     $("#salary-form").submit(function (event) {
       event.preventDefault();
       const salary = parseFloat($("#salary").val());
+    
+      if (isNaN(salary) || salary <= 0) {
+        alert("Please enter a valid salary.");
+        return;
+      }
+    
       let data = loadFromLocalStorage();
       data = data.filter(item => item.type !== "salary");
       data.push({ type: "salary", amount: salary });
       saveToLocalStorage(data);
+      alert("Salary added successfully!");
+    
+      this.reset();
     });
 
 
     $("#expenses-form").submit(function (event) {
       event.preventDefault();
-      const expenses = $("#expenses").val();
+      const expenses = parseFloat($("#expenses").val());
       const category = $("#category").val();
       const date = $("#date").val();
-      data.push({ type: "expenses", amount: parseFloat(expenses), category: category, date: date });
+    
+      if (isNaN(expenses) || expenses <= 0) {
+        alert("Please enter a valid expense amount.");
+        return;
+      }
+      if (!date) {
+        alert("Please select a date.");
+        return;
+      }
+    
+      let data = loadFromLocalStorage();
+      data.push({ type: "expenses", amount: expenses, category: category, date: date });
       saveToLocalStorage(data);
+      alert("Expense added successfully!");
+
+      this.reset();
     });
   });
 
@@ -135,7 +160,7 @@ $(document).ready(function () {
 
       data.forEach((item, index) => {
         let date = new Date(item.date);
-        let formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+        let formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
         content += `
       <tr data-index="${index}">
         <td>£${item.amount}</td>
@@ -158,7 +183,6 @@ $(document).ready(function () {
             <p class="card-text">£${remainingBudget}</p>
           </div>
         </div>
-        <button id="download-data" class="btn btn-primary">Download Data</button>
       </div>
       <div class="col-md-6">
         <canvas id="expensesChart"></canvas>
@@ -190,6 +214,8 @@ $(document).ready(function () {
         }
       });
 
+      
+
       $("#sort-cost").click(function () {
         expenses = sortData(expenses, 'amount', false);
         renderTable(expenses);
@@ -203,10 +229,6 @@ $(document).ready(function () {
       $("#sort-date").click(function () {
         expenses = sortData(expenses, 'date');
         renderTable(expenses);
-      });
-
-      $("#download-data").click(function () {
-        downloadJSON(data);
       });
 
       renderChart(expenses);
@@ -282,7 +304,27 @@ $(document).ready(function () {
   $("#data").click(function () {
     $("#content").html(`
       <h1>Data</h1>
-      <p>This section will display data.</p>
+      <button id="download-data" class="btn btn-primary">Download Data</button>
+      <button id="upload-data" class="btn btn-primary">Upload Data</button>
     `);
+
+    $("#download-data").click(function () {
+      downloadJSON(data);
+    });
+
+    $("#upload-data").click(function () {
+      $("#file-input").click();
+    });
+
+    $("#file-input").change(function (event) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        data = JSON.parse(e.target.result);
+        saveToLocalStorage(data);
+        alert("Budget data sucessfully uploaded!");
+      };
+      reader.readAsText(event.target.files[0]);
+      }
+    );
   });
 });

@@ -1,10 +1,11 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
   }
   
   .header {
-    background-color: #343a40;
+    background-color: #183A37;
     color: white;
     padding: 0.5rem;
     display: flex;
@@ -14,7 +15,7 @@ body {
   
   #sidebar {
     width: 200px;
-    background-color: #2b2b2b;
+    background-color: #04151F;
     height: 100vh;
     position: fixed;
     color: #fff;
@@ -56,16 +57,17 @@ body {
     padding-left: 20px;
   }
   
-  #welcome-section {
+  #welcome {
     text-align: center;
     background-size: cover;
     background-position: center;
     color: rgb(0, 0, 0);
     padding: 50px 20px;
+    padding-right: 200px;
     border-radius: 10px;
   }
   
-  #welcome-section h1 {
+  #welcome h1 {
     font-size: 3rem;
     margin-bottom: 20px;
   }
