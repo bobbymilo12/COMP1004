@@ -135,70 +135,81 @@ $(document).ready(function () {
     function renderTable(data) {
       let totalExpenses = data.reduce((sum, item) => item.type === 'expenses' ? sum + item.amount : sum, 0);
       let remainingBudget = salary ? salary.amount - totalExpenses : 0;
-
+    
       let content = `
-    <h1>Track Spending's</h1>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Salary</h5>
-            <p class="card-text">£${salary ? salary.amount : 0}</p>
-          </div>
-        </div>
-        <table class="table">
-          <thead>
-            <tr>
-              <th id="sort-cost">Cost</th>
-              <th id="sort-category">Category</th>
-              <th id="sort-date">Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-  `;
-
+        <h1>Track Spending's</h1>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Salary</h5>
+                <p class="card-text">£${salary ? salary.amount : 0}</p>
+              </div>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th id="sort-cost">Cost</th>
+                  <th id="sort-category">Category</th>
+                  <th id="sort-date">Date</th>
+                  <th>Actions</th>
+                  <th>
+                    <button id="clear-all" class="btn btn-danger">Clear All</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+      `;
+    
       data.forEach((item, index) => {
         let date = new Date(item.date);
         let formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
         content += `
-      <tr data-index="${index}">
-        <td>£${item.amount}</td>
-        <td>${item.category}</td>
-        <td>${formattedDate}</td>
-        <td>
-          <button class="btn btn-warning btn-edit">Edit</button>
-          <button class="btn btn-danger btn-delete">Delete</button>
-        </td>
-      </tr>
-    `;
+          <tr data-index="${index}">
+            <td>£${item.amount}</td>
+            <td>${item.category}</td>
+            <td>${formattedDate}</td>
+            <td>
+              <button class="btn btn-warning btn-edit">Edit</button>
+              <button class="btn btn-danger btn-delete">Delete</button>
+            </td>
+          </tr>
+        `;
       });
-
+    
       content += `
-          </tbody>
-        </table>
-                <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title">Remaining Budget</h5>
-            <p class="card-text">£${remainingBudget}</p>
+              </tbody>
+            </table>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Remaining Budget</h5>
+                <p class="card-text">£${remainingBudget}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <canvas id="expensesChart"></canvas>
           </div>
         </div>
-      </div>
-      <div class="col-md-6">
-        <canvas id="expensesChart"></canvas>
-      </div>
-    </div>
-  `;
-
+      `;
+    
       $("#content").html(content);
-
+    
+      $("#clear-all").click(function () {
+        if (confirm("Are you sure you want to delete all data?")) {
+          localStorage.removeItem('budgetData');
+          data = [];
+          renderTable(data);
+        }
+      });
+    
       $(".btn-delete").click(function () {
         const index = $(this).closest('tr').data('index');
         data.splice(index, 1);
         saveToLocalStorage(data);
         renderTable(data);
       });
-
+    
       $(".btn-edit").click(function () {
         const index = $(this).closest('tr').data('index');
         const item = data[index];
@@ -213,22 +224,22 @@ $(document).ready(function () {
           renderTable(data);
         }
       });
-      
+    
       $("#sort-cost").click(function () {
         expenses = sortData(expenses, 'amount', false);
         renderTable(expenses);
       });
-
+    
       $("#sort-category").click(function () {
         expenses = sortData(expenses, 'category');
         renderTable(expenses);
       });
-
+    
       $("#sort-date").click(function () {
         expenses = sortData(expenses, 'date');
         renderTable(expenses);
       });
-
+    
       renderChart(expenses);
     }
 
