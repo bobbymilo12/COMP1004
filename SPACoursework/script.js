@@ -33,7 +33,7 @@ $(document).ready(function () {
       <div id="welcome">
         <h1>Welcome</h1>
         <p>
-          Welcome to the COMP1004 sample Single Page Application. 
+          Welcome to my COMP1004 Single Page Application. 
         </p>
       </div>
     `);
